@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
   onScroll();
 
   if (navMenu && navLinksWrap) {
-    navMenu.addEventListener("click", () => {
+    navMenu.addEventListener("click", function () {
       navLinksWrap.classList.toggle("active");
     });
   }
@@ -215,8 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   if (backTop) {
-    backTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    backTop.addEventListener("click", function () {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     });
   }
 
@@ -228,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toast.textContent = text;
     toast.className = "site-toast show " + type;
 
-    setTimeout(() => {
+    setTimeout(function () {
       toast.className = "site-toast";
     }, 2500);
   }
@@ -238,11 +241,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       await navigator.clipboard.writeText(value);
-      showToast("Copiat în clipboard.", "success");
+      showToast("Textul a fost copiat.", "success");
     } catch {
-      showToast("Nu s-a putut copia.", "error");
+      showToast("Nu s-a putut copia textul.", "error");
     }
   }
+
+  document.addEventListener("click", function (event) {
+    const copyElement = event.target.closest(".copy-text");
+
+    if (!copyElement) return;
+
+    const value = copyElement.dataset.copy;
+
+    if (!value) return;
+
+    copyToClipboard(value);
+  });
 
   function selectServiceInForm(serviceName) {
     const serviceSelect = document.querySelector('select[name="serviciu"]');
@@ -261,46 +276,34 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.addEventListener("click", function (event) {
-    const copyElement = event.target.closest(".copy-text");
+    const orderButton = event.target.closest("[data-order-service]");
 
-    if (!copyElement) return;
+    if (!orderButton) return;
 
-    const value = copyElement.dataset.copy;
+    event.preventDefault();
 
-    if (!value) return;
+    const serviceName = orderButton.dataset.orderService || "";
+    const contactSection = document.querySelector("#contact");
+    const modal = document.getElementById("galleryModal");
 
-    copyToClipboard(value);
+    if (modal && modal.classList.contains("active")) {
+      modal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    if (contactSection) {
+      selectServiceInForm(serviceName);
+
+      setTimeout(function () {
+        contactSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 250);
+    } else {
+      window.location.href = `index.html?service=${encodeURIComponent(serviceName)}#contact`;
+    }
   });
-
-  document.addEventListener("click", function (event) {
-  const orderButton = event.target.closest("[data-order-service]");
-
-  if (!orderButton) return;
-
-  event.preventDefault();
-
-  const serviceName = orderButton.dataset.orderService || "";
-  const contactSection = document.querySelector("#contact");
-  const modal = document.getElementById("galleryModal");
-
-  if (modal && modal.classList.contains("active")) {
-    modal.classList.remove("active");
-    document.body.style.overflow = "";
-  }
-
-  if (contactSection) {
-    selectServiceInForm(serviceName);
-
-    setTimeout(() => {
-      contactSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }, 250);
-  } else {
-    window.location.href = `index.html?service=${encodeURIComponent(serviceName)}#contact`;
-  }
-});
 
   function cardTemplate(work, isHome = false) {
     const cardClass = isHome ? "work-card reveal" : "portfolio-card reveal";
@@ -440,10 +443,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (shell) {
-      shell.addEventListener("mouseenter", () => paused = true);
-      shell.addEventListener("mouseleave", () => paused = false);
-      shell.addEventListener("focusin", () => paused = true);
-      shell.addEventListener("focusout", () => paused = false);
+      shell.addEventListener("mouseenter", function () {
+        paused = true;
+      });
+
+      shell.addEventListener("mouseleave", function () {
+        paused = false;
+      });
+
+      shell.addEventListener("focusin", function () {
+        paused = true;
+      });
+
+      shell.addEventListener("focusout", function () {
+        paused = false;
+      });
     }
 
     animate();
@@ -543,7 +557,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   galleryItems.forEach((item, index) => {
-    item.addEventListener("click", () => openGallery(index));
+    item.addEventListener("click", function () {
+      openGallery(index);
+    });
   });
 
   if (modalClose) modalClose.addEventListener("click", closeGallery);
@@ -564,25 +580,26 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.key === "ArrowLeft") prevGallery();
   });
 
-  const searchInput = document.getElementById("workSearch");
   const filterButtons = document.querySelectorAll(".filter-btn");
+  const workSearch = document.getElementById("workSearch");
   const noResults = document.getElementById("noResults");
-  let activeFilter = new URLSearchParams(window.location.search).get("filter") || "all";
+  let activeFilter = "all";
 
-  function renderWorks() {
-    const portfolioCards = Array.from(document.querySelectorAll(".portfolio-card"));
-    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  function renderPortfolio() {
+    const cards = document.querySelectorAll(".portfolio-card");
+    const query = workSearch ? workSearch.value.toLowerCase().trim() : "";
     let visibleCount = 0;
 
-    portfolioCards.forEach((card) => {
+    cards.forEach((card) => {
       const category = card.dataset.category || "";
       const searchText = ((card.dataset.search || "") + " " + card.textContent).toLowerCase();
 
       const matchFilter = activeFilter === "all" || category === activeFilter;
       const matchSearch = !query || searchText.includes(query);
+
       const isVisible = matchFilter && matchSearch;
 
-      card.style.display = isVisible ? "block" : "none";
+      card.style.display = isVisible ? "" : "none";
 
       if (isVisible) visibleCount++;
     });
@@ -590,53 +607,56 @@ document.addEventListener("DOMContentLoaded", function () {
     if (noResults) noResults.style.display = visibleCount ? "none" : "block";
   }
 
-  if (filterButtons.length) {
-    filterButtons.forEach((button) => {
-      button.classList.toggle("active", button.dataset.filter === activeFilter);
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      activeFilter = this.dataset.filter || "all";
 
-      button.addEventListener("click", function () {
-        activeFilter = this.dataset.filter || "all";
+      filterButtons.forEach((btn) => btn.classList.remove("active"));
+      this.classList.add("active");
 
-        filterButtons.forEach((btn) => btn.classList.remove("active"));
-        this.classList.add("active");
-
-        renderWorks();
-      });
+      renderPortfolio();
     });
+  });
 
-    const hasActive = Array.from(filterButtons).some((btn) => btn.classList.contains("active"));
+  if (workSearch) {
+    workSearch.addEventListener("input", renderPortfolio);
+  }
 
-    if (!hasActive && filterButtons[0]) {
-      filterButtons[0].classList.add("active");
-      activeFilter = "all";
+  const filterFromUrl = new URLSearchParams(window.location.search).get("filter");
+
+  if (filterFromUrl) {
+    const selectedFilter = document.querySelector(`.filter-btn[data-filter="${filterFromUrl}"]`);
+
+    if (selectedFilter) {
+      selectedFilter.click();
     }
   }
 
-  if (searchInput) searchInput.addEventListener("input", renderWorks);
-  renderWorks();
+  renderPortfolio();
 
-  document.querySelectorAll(".ajax-form").forEach((form) => {
+  const forms = document.querySelectorAll(".ajax-form");
+
+  forms.forEach((form) => {
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      const message = form.querySelector(".form-message");
-      const button = form.querySelector('button[type="submit"]');
-      const oldText = button ? button.innerHTML : "";
+      const messageBox = form.querySelector(".form-message");
+      const submitButton = form.querySelector("button[type='submit']");
 
-      if (message) {
-        message.className = "form-message";
-        message.textContent = "";
+      if (messageBox) {
+        messageBox.textContent = "Se trimite mesajul...";
+        messageBox.className = "form-message";
       }
 
-      if (button) {
-        button.disabled = true;
-        button.textContent = "Se trimite...";
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.style.opacity = "0.7";
       }
 
       try {
         const formData = new FormData(form);
 
-        await fetch(form.action, {
+        const response = await fetch(form.action, {
           method: "POST",
           body: formData,
           headers: {
@@ -644,26 +664,30 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
 
-        form.reset();
+        if (response.ok) {
+          form.reset();
 
-        showToast("Mulțumim! Revenim cu un răspuns în cel mai scurt timp.", "success");
+          if (messageBox) {
+            messageBox.textContent = "Mesajul a fost trimis cu succes. Vă vom contacta în curând.";
+            messageBox.className = "form-message success";
+          }
 
-        if (message) {
-          message.textContent = "Mulțumim! Mesajul a fost trimis. Revenim cu un răspuns în cel mai scurt timp.";
-          message.classList.add("success");
+          showToast("Mesajul a fost trimis cu succes.", "success");
+        } else {
+          throw new Error("Eroare la trimitere");
         }
       } catch {
-        showToast("Mesajul nu a fost trimis. Încearcă din nou.", "error");
-
-        if (message) {
-          message.textContent = "Mesajul nu a fost trimis. Încearcă din nou.";
-          message.classList.add("error");
+        if (messageBox) {
+          messageBox.textContent = "Mesajul nu a fost trimis. Verificați datele și încercați din nou.";
+          messageBox.className = "form-message error";
         }
+
+        showToast("Mesajul nu a fost trimis.", "error");
       }
 
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = oldText;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.style.opacity = "";
       }
     });
   });

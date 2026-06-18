@@ -3,9 +3,8 @@
   --green-2: #76db18;
   --dark: #050706;
   --dark-2: #090c0a;
-  --card: #111611;
   --white: #f7f4eb;
-  --muted: rgba(247, 244, 235, 0.7);
+  --muted: rgba(247, 244, 235, 0.72);
   --border: rgba(247, 244, 235, 0.12);
   --radius: 26px;
 }
@@ -57,19 +56,6 @@ select {
 
 button {
   cursor: pointer;
-}
-
-i.bi {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-.icon-btn {
-  display: inline-grid;
-  place-items: center;
-  line-height: 1;
 }
 
 .container {
@@ -142,7 +128,6 @@ i.bi {
 .nav-cta:hover {
   background: var(--green-2);
   border-color: var(--green-2);
-  color: #071006;
   transform: translateY(-3px);
   box-shadow: 0 0 24px rgba(146, 255, 34, 0.18);
 }
@@ -178,7 +163,6 @@ i.bi {
   background: rgba(5, 7, 6, 0.72);
   border-bottom: 1px solid rgba(247, 244, 235, 0.08);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   transition: 0.25s ease;
 }
 
@@ -383,8 +367,13 @@ i.bi {
 }
 
 @keyframes moveStrip {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ABOUT */
@@ -528,14 +517,6 @@ i.bi {
 
 .portfolio-search {
   margin: 1.5rem 0;
-}
-
-.service-search i,
-.portfolio-search i {
-  width: 22px;
-  height: 22px;
-  color: var(--muted);
-  flex: 0 0 22px;
 }
 
 .service-search input,
@@ -790,29 +771,12 @@ i.bi {
   transition: 0.25s ease;
 }
 
-.gallery-order-btn {
-  min-width: 290px;
-  min-height: 56px;
-  margin-top: 2rem;
-  font-size: 1rem;
-}
-
-.work-order-btn i,
-.gallery-order-btn i {
-  transition: 0.25s ease;
-}
-
 .work-order-btn:hover,
 .gallery-order-btn:hover {
   background: rgba(146, 255, 34, 0.08);
   border-color: var(--green);
   color: var(--green);
   transform: translateY(-2px);
-}
-
-.work-order-btn:hover i,
-.gallery-order-btn:hover i {
-  transform: translateX(6px);
 }
 
 /* REVIEWS */
@@ -851,7 +815,6 @@ i.bi {
   flex-direction: column;
   justify-content: space-between;
   transition: 0.25s ease;
-  position: relative;
   overflow: hidden;
 }
 
@@ -1013,18 +976,9 @@ textarea:focus {
   transition: 0.22s ease;
 }
 
-.contact-icon {
-  color: var(--green);
-  font-size: 1.12rem;
-}
-
 .contact-icon-link:hover {
   background: rgba(146, 255, 34, 0.14);
   transform: translateY(-2px);
-}
-
-.static-icon {
-  pointer-events: none;
 }
 
 .phone-ring::before,
@@ -1063,7 +1017,6 @@ textarea:focus {
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.45;
-  transition: 0.22s ease;
 }
 
 .copy-text:hover {
@@ -1101,7 +1054,6 @@ textarea:focus {
   color: var(--white);
   font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
 }
 
 .contact-social-links {
@@ -1217,9 +1169,9 @@ textarea:focus {
   letter-spacing: -0.05em;
 }
 
-.gallery-details p {
-  margin: 0 0 1rem;
-  color: var(--muted);
+.gallery-details p,
+.gallery-details small {
+  color: rgba(247, 244, 235, 0.78);
   line-height: 1.6;
 }
 
@@ -1238,11 +1190,6 @@ textarea:focus {
   color: var(--green);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
-}
-
-.gallery-details small {
-  color: rgba(247, 244, 235, 0.78);
-  line-height: 1.6;
 }
 
 .gallery-close,
@@ -1287,7 +1234,7 @@ textarea:focus {
   background: rgba(146, 255, 34, 0.1);
 }
 
-/* PORTFOLIO PAGE */
+/* PORTFOLIO */
 
 .portfolio-header {
   padding: 138px 0 54px;
@@ -1308,7 +1255,6 @@ textarea:focus {
   color: var(--muted);
   font-weight: 800;
   margin-bottom: 1.7rem;
-  transition: 0.22s ease;
 }
 
 .back-link:hover {
@@ -1384,7 +1330,6 @@ textarea:focus {
   color: var(--white);
   font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 0.03em;
 }
 
 .footer-links {
@@ -1396,7 +1341,6 @@ textarea:focus {
 .footer-links a {
   color: rgba(247, 244, 235, 0.72);
   font-weight: 600;
-  transition: 0.22s ease;
 }
 
 .footer-links a:hover {
@@ -1413,9 +1357,8 @@ textarea:focus {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   border: 1px solid rgba(247, 244, 235, 0.12);
   background: rgba(247, 244, 235, 0.035);
   color: rgba(247, 244, 235, 0.78);
@@ -1441,38 +1384,7 @@ textarea:focus {
   margin: 0;
 }
 
-@media (max-width: 900px) {
-  .footer-inner {
-    grid-template-columns: 1fr;
-    gap: 1.8rem;
-    text-align: center;
-  }
-
-  .footer-brand {
-    max-width: 100%;
-    margin-inline: auto;
-  }
-
-  .footer-logo-link {
-    display: flex;
-    justify-content: center;
-  }
-
-  .footer-brand p {
-    max-width: 430px;
-    margin-inline: auto;
-  }
-
-  .footer-links {
-    align-items: center;
-  }
-
-  .footer-socials {
-    justify-content: center;
-  }
-}
-
-/* BACK TOP / TOAST / REVEAL */
+/* TOAST */
 
 #backTop {
   position: fixed;
@@ -1487,12 +1399,6 @@ textarea:focus {
   background: rgba(5, 7, 6, 0.72);
   color: var(--green);
   backdrop-filter: blur(12px);
-  transition: 0.22s ease;
-}
-
-#backTop:hover {
-  transform: translateY(-3px);
-  background: rgba(146, 255, 34, 0.12);
 }
 
 .site-toast {
@@ -1543,10 +1449,6 @@ textarea:focus {
 /* RESPONSIVE */
 
 @media (max-width: 1080px) {
-  .nav-links-wrap {
-    gap: 1rem;
-  }
-
   .works-grid,
   .portfolio-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1682,10 +1584,7 @@ textarea:focus {
   }
 
   .hero-actions,
-  .hero-actions a {
-    width: 100%;
-  }
-
+  .hero-actions a,
   .btn-main,
   .btn-ghost {
     width: 100%;
@@ -1711,11 +1610,6 @@ textarea:focus {
     height: 300px;
   }
 
-  .review-card {
-    width: 290px;
-    flex-basis: 290px;
-  }
-
   .contact-line {
     grid-template-columns: 48px 1fr;
     gap: 0.8rem;
@@ -1739,13 +1633,10 @@ textarea:focus {
     height: 210px;
   }
 
-  .gallery-order-btn {
-    width: 100%;
-    min-width: 100%;
-  }
-
+  .gallery-order-btn,
   .work-order-btn {
     width: 100%;
+    min-width: 100%;
   }
 
   .gallery-modal {
@@ -1791,5 +1682,61 @@ textarea:focus {
   .filter-btn {
     padding: 0.68rem 0.82rem;
     font-size: 0.86rem;
+  }
+
+  /* MODIFICARE CERUTĂ: recenzii mai mici pe telefon și comentariul vizibil complet */
+  .reviews-section {
+    overflow: hidden;
+  }
+
+  .reviews-marquee {
+    padding: 0.2rem 0 0.4rem;
+  }
+
+  .reviews-track {
+    gap: 0.75rem;
+  }
+
+  .review-card {
+    width: 245px;
+    flex: 0 0 245px;
+    min-height: auto;
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .review-mark {
+    width: 34px;
+    height: 34px;
+    font-size: 1.7rem;
+  }
+
+  .review-card p {
+    margin: 0.75rem 0 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(247, 244, 235, 0.9);
+    display: block;
+    overflow: visible;
+  }
+
+  .review-card h3 {
+    font-size: 0.98rem;
+  }
+
+  .review-card small {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .review-card {
+    width: 225px;
+    flex-basis: 225px;
+    padding: 0.9rem;
+  }
+
+  .review-card p {
+    font-size: 0.84rem;
   }
 }
