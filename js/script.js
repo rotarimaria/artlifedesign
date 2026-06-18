@@ -636,59 +636,100 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const forms = document.querySelectorAll(".ajax-form");
 
-  forms.forEach((form) => {
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
+forms.forEach((form) => {
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-      const messageBox = form.querySelector(".form-message");
-      const submitButton = form.querySelector("button[type='submit']");
+    const messageBox = form.querySelector(".form-message");
+    const submitButton = form.querySelector("button[type='submit']");
 
-      if (messageBox) {
-        messageBox.textContent = "Se trimite mesajul...";
-        messageBox.className = "form-message";
-      }
+    const nume = form.querySelector('input[name="nume"]');
+    const telefon = form.querySelector('input[name="telefon"]');
+    const email = form.querySelector('input[name="email"]');
+    const serviciu = form.querySelector('select[name="serviciu"]');
+    const mesaj = form.querySelector('textarea[name="mesaj"]');
 
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.style.opacity = "0.7";
-      }
+    if (!nume.value.trim()) {
+      messageBox.textContent = "Te rugăm să scrii numele și prenumele.";
+      messageBox.className = "form-message error";
+      nume.focus();
+      return;
+    }
 
-      try {
-        const formData = new FormData(form);
+    if (!telefon.value.trim()) {
+      messageBox.textContent = "Te rugăm să scrii numărul de telefon.";
+      messageBox.className = "form-message error";
+      telefon.focus();
+      return;
+    }
 
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: formData,
-          headers: {
-            Accept: "application/json"
-          }
-        });
+    if (!email.value.trim()) {
+      messageBox.textContent = "Te rugăm să scrii adresa de email.";
+      messageBox.className = "form-message error";
+      email.focus();
+      return;
+    }
 
-        if (response.ok) {
-          form.reset();
+    if (!serviciu.value.trim()) {
+      messageBox.textContent = "Te rugăm să alegi serviciul dorit.";
+      messageBox.className = "form-message error";
+      serviciu.focus();
+      return;
+    }
 
-          if (messageBox) {
-            messageBox.textContent = "Mesajul a fost trimis cu succes. Vă vom contacta în curând.";
-            messageBox.className = "form-message success";
-          }
+    if (!mesaj.value.trim()) {
+      messageBox.textContent = "Te rugăm să scrii mesajul tău.";
+      messageBox.className = "form-message error";
+      mesaj.focus();
+      return;
+    }
 
-          showToast("Mesajul a fost trimis cu succes.", "success");
-        } else {
-          throw new Error("Eroare la trimitere");
+    if (messageBox) {
+      messageBox.textContent = "Se trimite mesajul...";
+      messageBox.className = "form-message";
+    }
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.style.opacity = "0.7";
+    }
+
+    try {
+      const formData = new FormData(form);
+
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json"
         }
-      } catch {
+      });
+
+      if (response.ok) {
+        form.reset();
+
         if (messageBox) {
-          messageBox.textContent = "Mesajul nu a fost trimis. Verificați datele și încercați din nou.";
-          messageBox.className = "form-message error";
+          messageBox.textContent = "Mesajul a fost trimis cu succes. Vă vom contacta în curând.";
+          messageBox.className = "form-message success";
         }
 
-        showToast("Mesajul nu a fost trimis.", "error");
+        showToast("Mesajul a fost trimis cu succes.", "success");
+      } else {
+        throw new Error("Eroare la trimitere");
+      }
+    } catch {
+      if (messageBox) {
+        messageBox.textContent = "Mesajul nu a fost trimis. Verifică datele și încearcă din nou.";
+        messageBox.className = "form-message error";
       }
 
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.style.opacity = "";
-      }
-    });
+      showToast("Mesajul nu a fost trimis.", "error");
+    }
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.style.opacity = "";
+    }
   });
+});
 });
