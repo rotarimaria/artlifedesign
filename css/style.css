@@ -659,7 +659,7 @@ button {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-}
+}s
 
 .work-card,
 .portfolio-card {
@@ -1598,158 +1598,52 @@ select option {
 }
 
 @media (max-width: 640px) {
-  .container {
-    width: min(100% - 26px, 1180px);
-  }
 
-  .hero h1 {
-    font-size: clamp(3.3rem, 18vw, 5rem);
-  }
+    .works-grid,
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
 
-  .hero-actions,
-  .hero-actions a,
-  .btn-main,
-  .btn-ghost {
-    width: 100%;
-  }
+    .work-card,
+    .portfolio-card {
+        border-radius: 18px;
+    }
 
-  .about-team-photo,
-  .about-team-photo img {
-    min-height: 330px;
-  }
+    .work-img,
+    .portfolio-media {
+        height: 170px;
+    }
 
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
+    .work-info,
+    .portfolio-content {
+        padding: 12px;
+    }
 
-  input,
-  select,
-  textarea {
-    font-size: 0.95rem;
-  }
+    .work-info h3,
+    .portfolio-content h3 {
+        font-size: 1rem;
+        line-height: 1.2;
+        margin: 6px 0;
+    }
 
-  select {
-    background-position:
-      calc(100% - 23px) 50%,
-      calc(100% - 15px) 50%;
-  }
+    .work-info p,
+    .portfolio-content p {
+        display: none;
+    }
 
-  .works-grid,
-  .portfolio-grid {
-    grid-template-columns: 1fr;
-  }
+    .work-info small,
+    .portfolio-content small {
+        font-size: 0.68rem;
+    }
 
-  .work-img,
-  .portfolio-media {
-    height: 300px;
-  }
+    .work-order-btn {
+        width: 100%;
+        min-height: 42px;
+        font-size: 0.82rem;
+        padding: 0 10px;
+    }
 
-  .contact-form-card,
-  .contact-info {
-    padding: 1.1rem;
-  }
-
-  .contact-line {
-    grid-template-columns: 48px 1fr;
-    gap: 0.8rem;
-  }
-
-  .contact-icon-link {
-    width: 44px;
-    height: 44px;
-  }
-
-  .copy-text {
-    font-size: 0.94rem;
-  }
-
-  .map-box iframe {
-    height: 210px;
-  }
-
-  .gallery-modal {
-    padding: 0.8rem;
-  }
-
-  .gallery-close {
-    top: 0.7rem;
-    right: 0.7rem;
-  }
-
-  .gallery-nav {
-    width: 44px;
-    height: 44px;
-  }
-
-  .gallery-prev {
-    left: 0.6rem;
-  }
-
-  .gallery-next {
-    right: 0.6rem;
-  }
-
-  .gallery-image-wrap {
-    min-height: 300px;
-  }
-
-  .gallery-details {
-    padding: 1.1rem;
-  }
-
-  .gallery-order-btn,
-  .work-order-btn {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  .portfolio-header {
-    padding-top: 110px;
-  }
-
-  .portfolio-filters,
-  .services-tabs {
-    gap: 0.5rem;
-  }
-
-  .service-filter,
-  .filter-btn {
-    padding: 0.68rem 0.82rem;
-    font-size: 0.86rem;
-  }
-
-  .reviews-track {
-    gap: 0.75rem;
-  }
-
-  .review-card {
-    width: 245px;
-    flex: 0 0 245px;
-    min-height: auto;
-    padding: 1rem;
-    border-radius: 20px;
-  }
-
-  .review-mark {
-    width: 34px;
-    height: 34px;
-    font-size: 1.7rem;
-  }
-
-  .review-card p {
-    margin: 0.75rem 0 0.9rem;
-    font-size: 0.88rem;
-    line-height: 1.45;
-  }
-
-  .review-card h3 {
-    font-size: 0.98rem;
-  }
-
-  .review-card small {
-    font-size: 0.78rem;
-  }
 }
 
 @media (max-width: 380px) {
