@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const works = [
     {
       title: "Bonjour Tour",
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
       date: "2025",
       desc: "Element personalizat pentru expunere vizuală.",
       tags: "Retail, Campanie, Display",
-      search: "cub sticla vara vara aquacity posm stand"
+      search: "cub sticla vara aquacity posm stand"
     },
     {
       title: "Stand promoțional",
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
       date: "2025",
       desc: "Material personalizat pentru campanie.",
       tags: "Stand, P.O.S.M., Brand",
-      search: "stand vara vara aquacity posm"
+      search: "stand vara aquacity posm"
     },
     {
       title: "Fișe de preț",
@@ -152,55 +152,67 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   ];
 
-  const navbar = document.getElementById("navbarTop");
-  const scrollProgress = document.getElementById("scrollProgress");
-  const backTop = document.getElementById("backTop");
-  const navMenu = document.getElementById("navMenu");
-  const navLinksWrap = document.getElementById("navLinksWrap");
-  const navLinks = document.querySelectorAll(".nav-link");
-  const sections = document.querySelectorAll("section[id]");
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => document.querySelectorAll(selector);
 
-  function onScroll() {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  const navbar = $("#navbarTop");
+  const scrollProgress = $("#scrollProgress");
+  const backTop = $("#backTop");
+  const navMenu = $("#navMenu");
+  const navLinksWrap = $("#navLinksWrap");
 
-    if (navbar) navbar.classList.toggle("nav-scrolled", scrollTop > 40);
+  function showToast(text, type = "success") {
+    const toast = $("#siteToast");
+    if (!toast) return;
+
+    toast.textContent = text;
+    toast.className = `site-toast show ${type}`;
+
+    setTimeout(() => {
+      toast.className = "site-toast";
+    }, 2500);
+  }
+
+  function handleScroll() {
+    const top = window.scrollY;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = height > 0 ? (top / height) * 100 : 0;
+
+    if (navbar) navbar.classList.toggle("nav-scrolled", top > 40);
     if (scrollProgress) scrollProgress.style.setProperty("--scroll-progress", percent + "%");
-    if (backTop) backTop.style.display = scrollTop > 350 ? "grid" : "none";
+    if (backTop) backTop.style.display = top > 350 ? "grid" : "none";
 
     let current = "";
 
-    sections.forEach((section) => {
-      const top = section.offsetTop - 130;
+    $$("section[id]").forEach((section) => {
+      const sectionTop = section.offsetTop - 130;
 
-      if (scrollTop >= top && scrollTop < top + section.offsetHeight) {
+      if (top >= sectionTop && top < sectionTop + section.offsetHeight) {
         current = section.id;
       }
     });
 
-    navLinks.forEach((link) => {
+    $$(".nav-link").forEach((link) => {
       const href = link.getAttribute("href");
 
-      if (!href || !href.startsWith("#")) return;
-
-      link.classList.toggle("active", href === "#" + current);
+      if (href && href.startsWith("#")) {
+        link.classList.toggle("active", href === `#${current}`);
+      }
     });
   }
 
-  window.addEventListener("scroll", onScroll);
-  onScroll();
+  window.addEventListener("scroll", handleScroll);
+  handleScroll();
 
   if (navMenu && navLinksWrap) {
-    navMenu.addEventListener("click", function () {
+    navMenu.addEventListener("click", () => {
       navLinksWrap.classList.toggle("active");
     });
   }
 
-  document.querySelectorAll('a[href^="#"]').forEach((link) => {
-    link.addEventListener("click", function (event) {
-      const target = document.querySelector(this.getAttribute("href"));
-
+  $$('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const target = $(link.getAttribute("href"));
       if (!target) return;
 
       event.preventDefault();
@@ -215,28 +227,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   if (backTop) {
-    backTop.addEventListener("click", function () {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+    backTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
-  function showToast(text, type = "success") {
-    const toast = document.getElementById("siteToast");
-
-    if (!toast) return;
-
-    toast.textContent = text;
-    toast.className = "site-toast show " + type;
-
-    setTimeout(function () {
-      toast.className = "site-toast";
-    }, 2500);
-  }
-
-  async function copyToClipboard(value) {
+  async function copyText(value) {
     if (!value) return;
 
     try {
@@ -247,24 +243,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  document.addEventListener("click", function (event) {
-    const copyElement = event.target.closest(".copy-text");
+  document.addEventListener("click", (event) => {
+    const copyButton = event.target.closest(".copy-text");
+    if (!copyButton) return;
 
-    if (!copyElement) return;
-
-    const value = copyElement.dataset.copy;
-
-    if (!value) return;
-
-    copyToClipboard(value);
+    copyText(copyButton.dataset.copy);
   });
 
-  function selectServiceInForm(serviceName) {
-    const serviceSelect = document.querySelector('select[name="serviciu"]');
+  function selectService(serviceName) {
+    const select = $('select[name="serviciu"]');
+    if (!select || !serviceName) return;
 
-    if (!serviceSelect || !serviceName) return;
-
-    Array.from(serviceSelect.options).forEach((option) => {
+    [...select.options].forEach((option) => {
       option.selected = option.value === serviceName;
     });
   }
@@ -272,48 +262,40 @@ document.addEventListener("DOMContentLoaded", function () {
   const serviceFromUrl = new URLSearchParams(window.location.search).get("service");
 
   if (serviceFromUrl) {
-    selectServiceInForm(decodeURIComponent(serviceFromUrl));
+    selectService(decodeURIComponent(serviceFromUrl));
   }
 
-  document.addEventListener("click", function (event) {
-    const orderButton = event.target.closest("[data-order-service]");
-
-    if (!orderButton) return;
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-order-service]");
+    if (!button) return;
 
     event.preventDefault();
 
-    const serviceName = orderButton.dataset.orderService || "";
-    const contactSection = document.querySelector("#contact");
-    const modal = document.getElementById("galleryModal");
+    const service = button.dataset.orderService || "";
+    const contact = $("#contact");
+    const modal = $("#galleryModal");
 
     if (modal && modal.classList.contains("active")) {
-      modal.classList.remove("active");
-      document.body.style.overflow = "";
+      closeGallery();
     }
 
-    if (contactSection) {
-      selectServiceInForm(serviceName);
-
-      setTimeout(function () {
-        contactSection.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }, 250);
+    if (contact) {
+      selectService(service);
+      contact.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      window.location.href = `index.html?service=${encodeURIComponent(serviceName)}#contact`;
+      window.location.href = `index.html?service=${encodeURIComponent(service)}#contact`;
     }
   });
 
-  function cardTemplate(work, isHome = false) {
+  function workCard(work, isHome = false) {
     const cardClass = isHome ? "work-card reveal" : "portfolio-card reveal";
     const mediaClass = isHome ? "work-img gallery-item" : "portfolio-media gallery-item";
-    const serviceParam = encodeURIComponent(work.service);
-    const orderHref = isHome ? "#contact" : `index.html?service=${serviceParam}#contact`;
+    const orderHref = isHome ? "#contact" : `index.html?service=${encodeURIComponent(work.service)}#contact`;
 
     return `
       <article class="${cardClass}" data-category="${work.category}" data-search="${work.search}">
         <button class="${mediaClass}"
+          type="button"
           data-full="${work.image}"
           data-title="${work.title}"
           data-service="${work.service}"
@@ -341,192 +323,231 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   }
 
-  const homeWorksGrid = document.getElementById("homeWorksGrid");
-  const portfolioGrid = document.getElementById("portfolioGrid");
+  const homeGrid = $("#homeWorksGrid");
+  const portfolioGrid = $("#portfolioGrid");
 
-  if (homeWorksGrid) {
-    homeWorksGrid.innerHTML = works.slice(0, 4).map((work) => cardTemplate(work, true)).join("");
+  if (homeGrid) {
+    homeGrid.innerHTML = works.slice(0, 4).map((work) => workCard(work, true)).join("");
   }
 
   if (portfolioGrid) {
-    portfolioGrid.innerHTML = works.map((work) => cardTemplate(work, false)).join("");
+    portfolioGrid.innerHTML = works.map((work) => workCard(work)).join("");
   }
 
-  const revealItems = document.querySelectorAll(".reveal");
+  function revealOnScroll() {
+    const items = $$(".reveal");
 
-  if ("IntersectionObserver" in window) {
-    const revealObserver = new IntersectionObserver((entries) => {
+    if (!("IntersectionObserver" in window)) {
+      items.forEach((item) => item.classList.add("visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          revealObserver.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
       });
     }, { threshold: 0.15 });
 
-    revealItems.forEach((item) => revealObserver.observe(item));
-  } else {
-    revealItems.forEach((item) => item.classList.add("visible"));
+    items.forEach((item) => observer.observe(item));
   }
 
-  const serviceFilters = document.querySelectorAll(".service-filter");
-  const serviceCards = document.querySelectorAll("[data-service-card]");
-  const serviceSearch = document.getElementById("serviceSearch");
-  let activeService = "all";
+  revealOnScroll();
 
-  function renderServices() {
-    const query = serviceSearch ? serviceSearch.value.toLowerCase().trim() : "";
+  function filterServices() {
+    const search = $("#serviceSearch");
+    const cards = $$("[data-service-card]");
+    const buttons = $$(".service-filter");
+    let active = "all";
 
-    serviceCards.forEach((card) => {
-      const cardService = card.dataset.serviceCard;
-      const searchText = ((card.dataset.searchService || "") + " " + card.textContent).toLowerCase();
+    function render() {
+      const query = search ? search.value.toLowerCase().trim() : "";
 
-      const matchFilter = activeService === "all" || activeService === cardService;
-      const matchSearch = !query || searchText.includes(query);
+      cards.forEach((card) => {
+        const category = card.dataset.serviceCard;
+        const text = `${card.dataset.searchService || ""} ${card.textContent}`.toLowerCase();
 
-      card.classList.toggle("hidden", !(matchFilter && matchSearch));
+        const visible =
+          (active === "all" || active === category) &&
+          (!query || text.includes(query));
+
+        card.classList.toggle("hidden", !visible);
+      });
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        active = button.dataset.service || "all";
+
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        render();
+      });
     });
+
+    if (search) search.addEventListener("input", render);
+
+    render();
   }
 
-  serviceFilters.forEach((button) => {
-    button.addEventListener("click", function () {
-      activeService = this.dataset.service || "all";
+  filterServices();
 
-      serviceFilters.forEach((btn) => btn.classList.remove("active"));
-      this.classList.add("active");
+  function filterPortfolio() {
+    const search = $("#workSearch");
+    const buttons = $$(".filter-btn");
+    const noResults = $("#noResults");
+    let active = "all";
 
-      renderServices();
+    function render() {
+      const query = search ? search.value.toLowerCase().trim() : "";
+      let visibleCount = 0;
+
+      $$(".portfolio-card").forEach((card) => {
+        const category = card.dataset.category;
+        const text = `${card.dataset.search || ""} ${card.textContent}`.toLowerCase();
+
+        const visible =
+          (active === "all" || active === category) &&
+          (!query || text.includes(query));
+
+        card.style.display = visible ? "" : "none";
+
+        if (visible) visibleCount++;
+      });
+
+      if (noResults) {
+        noResults.style.display = visibleCount ? "none" : "block";
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        active = button.dataset.filter || "all";
+
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        render();
+      });
     });
-  });
 
-  if (serviceSearch) serviceSearch.addEventListener("input", renderServices);
-  renderServices();
+    if (search) search.addEventListener("input", render);
 
-  function createContinuousCarousel(trackSelector, options = {}) {
-    const track = document.querySelector(trackSelector);
+    const filterFromUrl = new URLSearchParams(window.location.search).get("filter");
+    const selected = filterFromUrl ? $(`.filter-btn[data-filter="${filterFromUrl}"]`) : null;
 
+    if (selected) {
+      selected.click();
+    } else {
+      render();
+    }
+  }
+
+  filterPortfolio();
+
+  function carousel(trackSelector, speed = 0.45) {
+    const track = $(trackSelector);
     if (!track) return;
 
-    const shell = track.parentElement;
-    const speed = options.speed || 0.35;
-
+    const parent = track.parentElement;
     let offset = 0;
     let paused = false;
 
-    function getGap() {
+    function gap() {
       return parseFloat(getComputedStyle(track).gap) || 0;
     }
 
-    function getFirstSize() {
+    function firstWidth() {
       const first = track.children[0];
-
-      if (!first) return 0;
-
-      return first.getBoundingClientRect().width + getGap();
+      return first ? first.getBoundingClientRect().width + gap() : 0;
     }
 
-    function animate() {
+    function move() {
       if (!paused) {
         offset -= speed;
 
-        const firstSize = getFirstSize();
-
-        if (firstSize && Math.abs(offset) >= firstSize) {
-          offset += firstSize;
+        if (Math.abs(offset) >= firstWidth()) {
+          offset += firstWidth();
           track.appendChild(track.firstElementChild);
         }
 
         track.style.transform = `translateX(${offset}px)`;
       }
 
-      requestAnimationFrame(animate);
+      requestAnimationFrame(move);
     }
 
-    if (shell) {
-      shell.addEventListener("mouseenter", function () {
-        paused = true;
-      });
-
-      shell.addEventListener("mouseleave", function () {
-        paused = false;
-      });
-
-      shell.addEventListener("focusin", function () {
-        paused = true;
-      });
-
-      shell.addEventListener("focusout", function () {
-        paused = false;
-      });
+    if (parent) {
+      parent.addEventListener("mouseenter", () => paused = true);
+      parent.addEventListener("mouseleave", () => paused = false);
+      parent.addEventListener("focusin", () => paused = true);
+      parent.addEventListener("focusout", () => paused = false);
     }
 
-    animate();
+    move();
   }
 
-  createContinuousCarousel("#reviewsTrack", {
-    speed: 0.45
-  });
+  carousel("#reviewsTrack");
 
-  const galleryItems = Array.from(document.querySelectorAll(".gallery-item"));
-  const modal = document.getElementById("galleryModal");
-  const modalImg = document.getElementById("galleryModalImage");
-  const modalTitle = document.getElementById("galleryModalTitle");
-  const modalService = document.getElementById("galleryModalService");
-  const modalDate = document.getElementById("galleryModalDate");
-  const modalDesc = document.getElementById("galleryModalDesc");
-  const modalTags = document.getElementById("galleryModalTags");
-  const modalClose = document.getElementById("galleryModalClose");
-  const galleryPrev = document.getElementById("galleryPrev");
-  const galleryNext = document.getElementById("galleryNext");
+  let galleryItems = [];
+  let galleryIndex = 0;
 
-  let currentGalleryIndex = 0;
+  const modal = $("#galleryModal");
+  const modalImg = $("#galleryModalImage");
+  const modalTitle = $("#galleryModalTitle");
+  const modalService = $("#galleryModalService");
+  const modalDate = $("#galleryModalDate");
+  const modalDesc = $("#galleryModalDesc");
+  const modalTags = $("#galleryModalTags");
+  const galleryOrderBtn = $("#galleryOrderBtn");
+
+  function updateGalleryItems() {
+    galleryItems = [...$$(".gallery-item")];
+  }
 
   function renderGallery(index) {
     const item = galleryItems[index];
-
     if (!item || !modalImg) return;
 
     modalImg.src = item.dataset.full || "";
     modalImg.alt = item.dataset.title || "Lucrare ArtLife Design";
 
-    if (modalTitle) modalTitle.textContent = item.dataset.title || "Lucrare ArtLife Design";
-    if (modalService) modalService.textContent = item.dataset.service || "Lucrare realizată";
+    if (modalTitle) modalTitle.textContent = item.dataset.title || "";
+    if (modalService) modalService.textContent = item.dataset.service || "";
     if (modalDate) modalDate.textContent = item.dataset.date || "";
     if (modalDesc) modalDesc.textContent = item.dataset.desc || "";
 
     if (modalTags) {
       modalTags.innerHTML = "";
 
-      const tags = (item.dataset.tags || "")
+      (item.dataset.tags || "")
         .split(",")
         .map((tag) => tag.trim())
-        .filter(Boolean);
-
-      tags.forEach((tag) => {
-        const span = document.createElement("span");
-        span.textContent = tag;
-        modalTags.appendChild(span);
-      });
+        .filter(Boolean)
+        .forEach((tag) => {
+          const span = document.createElement("span");
+          span.textContent = tag;
+          modalTags.appendChild(span);
+        });
     }
 
-    const galleryOrderBtn = document.getElementById("galleryOrderBtn");
-
     if (galleryOrderBtn) {
-      const serviceName = item.dataset.service || "";
-      galleryOrderBtn.dataset.orderService = serviceName;
+      const service = item.dataset.service || "";
 
-      if (document.getElementById("contact")) {
-        galleryOrderBtn.href = "#contact";
-      } else {
-        galleryOrderBtn.href = `index.html?service=${encodeURIComponent(serviceName)}#contact`;
-      }
+      galleryOrderBtn.dataset.orderService = service;
+      galleryOrderBtn.href = $("#contact")
+        ? "#contact"
+        : `index.html?service=${encodeURIComponent(service)}#contact`;
     }
   }
 
   function openGallery(index) {
     if (!modal || !galleryItems.length) return;
 
-    currentGalleryIndex = index;
+    galleryIndex = index;
     renderGallery(index);
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
@@ -545,34 +566,34 @@ document.addEventListener("DOMContentLoaded", function () {
   function nextGallery() {
     if (!galleryItems.length) return;
 
-    currentGalleryIndex = (currentGalleryIndex + 1) % galleryItems.length;
-    renderGallery(currentGalleryIndex);
+    galleryIndex = (galleryIndex + 1) % galleryItems.length;
+    renderGallery(galleryIndex);
   }
 
   function prevGallery() {
     if (!galleryItems.length) return;
 
-    currentGalleryIndex = (currentGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
-    renderGallery(currentGalleryIndex);
+    galleryIndex = (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+    renderGallery(galleryIndex);
   }
 
+  updateGalleryItems();
+
   galleryItems.forEach((item, index) => {
-    item.addEventListener("click", function () {
-      openGallery(index);
-    });
+    item.addEventListener("click", () => openGallery(index));
   });
 
-  if (modalClose) modalClose.addEventListener("click", closeGallery);
-  if (galleryNext) galleryNext.addEventListener("click", nextGallery);
-  if (galleryPrev) galleryPrev.addEventListener("click", prevGallery);
+  $("#galleryModalClose")?.addEventListener("click", closeGallery);
+  $("#galleryNext")?.addEventListener("click", nextGallery);
+  $("#galleryPrev")?.addEventListener("click", prevGallery);
 
   if (modal) {
-    modal.addEventListener("click", function (event) {
+    modal.addEventListener("click", (event) => {
       if (event.target === modal) closeGallery();
     });
   }
 
-  document.addEventListener("keydown", function (event) {
+  document.addEventListener("keydown", (event) => {
     if (!modal || !modal.classList.contains("active")) return;
 
     if (event.key === "Escape") closeGallery();
@@ -580,132 +601,103 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.key === "ArrowLeft") prevGallery();
   });
 
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const workSearch = document.getElementById("workSearch");
-  const noResults = document.getElementById("noResults");
-  let activeFilter = "all";
-
-  function renderPortfolio() {
-    const cards = document.querySelectorAll(".portfolio-card");
-    const query = workSearch ? workSearch.value.toLowerCase().trim() : "";
-    let visibleCount = 0;
-
-    cards.forEach((card) => {
-      const category = card.dataset.category || "";
-      const searchText = ((card.dataset.search || "") + " " + card.textContent).toLowerCase();
-
-      const matchFilter = activeFilter === "all" || category === activeFilter;
-      const matchSearch = !query || searchText.includes(query);
-
-      const isVisible = matchFilter && matchSearch;
-
-      card.style.display = isVisible ? "" : "none";
-
-      if (isVisible) visibleCount++;
+  function clearErrors(form) {
+    form.querySelectorAll(".field-error").forEach((error) => error.remove());
+    form.querySelectorAll(".field-invalid").forEach((field) => {
+      field.classList.remove("field-invalid");
     });
-
-    if (noResults) noResults.style.display = visibleCount ? "none" : "block";
   }
 
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      activeFilter = this.dataset.filter || "all";
+  function showFieldError(field, text) {
+    if (!field) return;
 
-      filterButtons.forEach((btn) => btn.classList.remove("active"));
-      this.classList.add("active");
+    field.classList.add("field-invalid");
 
-      renderPortfolio();
-    });
-  });
+    const error = document.createElement("span");
+    error.className = "field-error";
+    error.textContent = text;
 
-  if (workSearch) {
-    workSearch.addEventListener("input", renderPortfolio);
+    field.insertAdjacentElement("afterend", error);
+    field.focus();
   }
 
-  const filterFromUrl = new URLSearchParams(window.location.search).get("filter");
+  function validateForm(form) {
+    clearErrors(form);
 
-  if (filterFromUrl) {
-    const selectedFilter = document.querySelector(`.filter-btn[data-filter="${filterFromUrl}"]`);
+    const fields = [
+      {
+        el: form.querySelector('input[name="nume"]'),
+        message: "Scrie numele și prenumele tău."
+      },
+      {
+        el: form.querySelector('input[name="telefon"]'),
+        message: "Scrie numărul tău de telefon."
+      },
+      {
+        el: form.querySelector('input[name="email"]'),
+        message: "Scrie adresa ta de email."
+      },
+      {
+        el: form.querySelector('select[name="serviciu"]'),
+        message: "Alege serviciul dorit."
+      },
+      {
+        el: form.querySelector('textarea[name="mesaj"]'),
+        message: "Scrie mesajul tău."
+      }
+    ];
 
-    if (selectedFilter) {
-      selectedFilter.click();
+    for (const field of fields) {
+      if (!field.el || !field.el.value.trim()) {
+        showFieldError(field.el, field.message);
+        return false;
+      }
     }
-  }
 
-  renderPortfolio();
-
-  const forms = document.querySelectorAll(".ajax-form");
-
-forms.forEach((form) => {
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const messageBox = form.querySelector(".form-message");
-    const submitButton = form.querySelector("button[type='submit']");
-
-    const nume = form.querySelector('input[name="nume"]');
-    const telefon = form.querySelector('input[name="telefon"]');
     const email = form.querySelector('input[name="email"]');
-    const serviciu = form.querySelector('select[name="serviciu"]');
-    const mesaj = form.querySelector('textarea[name="mesaj"]');
 
-    if (!nume.value.trim()) {
-      messageBox.textContent = "Te rugăm să scrii numele și prenumele.";
-      messageBox.className = "form-message error";
-      nume.focus();
-      return;
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+      showFieldError(email, "Scrie o adresă de email validă.");
+      return false;
     }
 
-    if (!telefon.value.trim()) {
-      messageBox.textContent = "Te rugăm să scrii numărul de telefon.";
-      messageBox.className = "form-message error";
-      telefon.focus();
-      return;
-    }
+    return true;
+  }
 
-    if (!email.value.trim()) {
-      messageBox.textContent = "Te rugăm să scrii adresa de email.";
-      messageBox.className = "form-message error";
-      email.focus();
-      return;
-    }
+  $$(".ajax-form").forEach((form) => {
+    form.setAttribute("novalidate", "novalidate");
 
-    if (!serviciu.value.trim()) {
-      messageBox.textContent = "Te rugăm să alegi serviciul dorit.";
-      messageBox.className = "form-message error";
-      serviciu.focus();
-      return;
-    }
+    form.addEventListener("input", () => clearErrors(form));
 
-    if (!mesaj.value.trim()) {
-      messageBox.textContent = "Te rugăm să scrii mesajul tău.";
-      messageBox.className = "form-message error";
-      mesaj.focus();
-      return;
-    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-    if (messageBox) {
-      messageBox.textContent = "Se trimite mesajul...";
-      messageBox.className = "form-message";
-    }
+      const messageBox = form.querySelector(".form-message");
+      const button = form.querySelector('button[type="submit"]');
 
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.style.opacity = "0.7";
-    }
+      if (!validateForm(form)) return;
 
-    try {
-      const formData = new FormData(form);
+      if (messageBox) {
+        messageBox.textContent = "Se trimite mesajul...";
+        messageBox.className = "form-message";
+      }
 
-      const response = await fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json"
-        }
-      });
+      if (button) {
+        button.disabled = true;
+        button.style.opacity = "0.7";
+      }
 
-      if (response.ok) {
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: {
+            Accept: "application/json"
+          }
+        });
+
+        if (!response.ok) throw new Error();
+
         form.reset();
 
         if (messageBox) {
@@ -714,22 +706,19 @@ forms.forEach((form) => {
         }
 
         showToast("Mesajul a fost trimis cu succes.", "success");
-      } else {
-        throw new Error("Eroare la trimitere");
-      }
-    } catch {
-      if (messageBox) {
-        messageBox.textContent = "Mesajul nu a fost trimis. Verifică datele și încearcă din nou.";
-        messageBox.className = "form-message error";
+      } catch {
+        if (messageBox) {
+          messageBox.textContent = "Mesajul nu a fost trimis. Verifică datele și încearcă din nou.";
+          messageBox.className = "form-message error";
+        }
+
+        showToast("Mesajul nu a fost trimis.", "error");
       }
 
-      showToast("Mesajul nu a fost trimis.", "error");
-    }
-
-    if (submitButton) {
-      submitButton.disabled = false;
-      submitButton.style.opacity = "";
-    }
+      if (button) {
+        button.disabled = false;
+        button.style.opacity = "";
+      }
+    });
   });
-});
 });
